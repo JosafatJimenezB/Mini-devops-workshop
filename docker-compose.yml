@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node-api
+    ports:
+      - "9000:9000"
+    restart: unless-stopped
+    profiles:
+      - "dev"
+  api-production:
+    image: ghcr.io/josafatjimenezb/mini-devops-workshop:latest
+    container_name: node-api-prod
+    ports:
+      - "9000:9000"
+    restart: unless-stopped
+    profiles:
+      - "prod"

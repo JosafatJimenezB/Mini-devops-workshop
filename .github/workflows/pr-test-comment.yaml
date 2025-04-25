@@ -1,0 +1,46 @@
+name: PR Tests & Comment
+
+on: pull_request
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  test-and-comment:
+    name: Ejecutar Tests y Comentar
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configurar pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.4.1
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Instalar dependencias
+        run: pnpm install
+
+      - name: Ejecutar tests
+        id: run-tests
+        run: pnpm test
+        continue-on-error: true
+
+      - name: Comentar resultado en el PR
+        uses: wow-actions/auto-comment@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          pullRequestOpened: |
+            ${{ steps.run-tests.outcome == 'success' && '👋 @{{ author }} 🌟Brillan más que estrella fugaz: tests aprobados. ✨✅' }}
+            ${{ steps.run-tests.outcome == 'failure' && '👋 @{{ author }} 🔥¡Fuego! Los tests arden en errores. 🔥🧯'}}
