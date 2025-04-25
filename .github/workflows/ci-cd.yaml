@@ -68,3 +68,27 @@ jobs:
         run: |
           docker push ghcr.io/${{ env.owner_lower }}/${{ env.repo_name }}:latest
           docker push ghcr.io/${{ env.owner_lower }}/${{ env.repo_name }}:${{ env.sha_short }}
+
+  deploy:
+    name: Deploy with Docker Compose
+    needs: docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: SSH into server
+        run: |
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+          git clone https://github.com/JosafatJimenezB/Mini-devops-workshop.git
+          cd Mini-devops-workshop/
+          echo "Pulling latest changes from main branch"
+          git pull origin main
+          echo "Stopping and removing old containers"
+          docker compose down --profile prod
+          echo "Removing old images"
+          docker image prune -f
+          echo "Up new containers"
+          docker compose --profile prod up -d
+          EOF
