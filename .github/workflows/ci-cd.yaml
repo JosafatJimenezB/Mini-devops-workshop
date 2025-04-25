@@ -86,9 +86,9 @@ jobs:
           echo "Pulling latest changes from main branch"
           git pull origin main
           echo "Stopping and removing old containers"
-          docker compose --profile prod down
+          docker compose --profile prod down --rmi all --remove-orphans
           echo "Removing old images"
-          docker image prune -f
+           docker image prune -a -f
           echo "Up new containers"
           docker compose --profile prod up -d
           EOF
