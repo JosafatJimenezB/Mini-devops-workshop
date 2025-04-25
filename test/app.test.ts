@@ -25,4 +25,11 @@ describe("API Endpoints", () => {
     expect(res.statusCode).toBe(500);
     expect(res.body).toEqual({ status: "Internal server error" });
   });
+
+  it("GET /hello/:name should return Hello, name!", async () => {
+    const name = "Josafat";
+    const res = await request(app).get(`/hello/${name}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ message: `Hello, ${name}!` });
+  });
 });

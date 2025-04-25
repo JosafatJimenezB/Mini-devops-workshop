@@ -17,4 +17,9 @@ app.get("/not-found", (req, res) => {
 app.get("/error", (req, res) => {
   res.status(500).json({ status: "Internal server error" });
 });
+
+app.get("/hello/:name", (req, res) => {
+  const name = req.params.name || "World";
+  res.status(200).json({ message: `Hello, ${name}!` });
+});
 export default app;
